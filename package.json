@@ -1,6 +1,6 @@
 {
   "name": "immune-js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "ImmuneJs makes objects immutable based on the proxy way",
   "main": "index.js",
   "scripts": {

@@ -1,16 +1,16 @@
-module.exports = function(object1, object2, compCondition) {
+module.exports = function(object1, object2, options) {
     if (typeof object1 !== 'object') return object1;
     if (!object2) return proxying(object1);
     if (!!object2 && typeof object2 !== 'object') return proxying(object1);
     if(!!object1 && !!object2 && typeof object1 === 'object' && typeof object2 === 'object') {
-        return rightJoin(object1, object2, compCondition)
+        return rightJoin(object1, object2, options)
     }
     return proxying(object1);
 }
 
-function rightJoin(object1, object2, compCondition) {
+function rightJoin(object1, object2, options) {
     var result = object1;
-    var compare = typeof compCondition === 'function' ? compCondition : objectsAreSame
+    var compare = typeof options.condition === 'function' ? options.condition : objectsAreSame
     if (Array.isArray(object1) && Array.isArray(object2)) {
         var result = [];
         if (object1.length) {
@@ -30,11 +30,11 @@ function rightJoin(object1, object2, compCondition) {
         if (compare(object1, object2)) result = object2;
     };
 
-    return proxying(result);
+    return options.disableProxy ? result : proxying(result);
 };
 
 function proxying(object) {
-    return new Proxy(object, { 
+    return new Proxy(Object.assign(object, { [Symbol.for(object)]: true }), { 
         get: (target, prop) => {
             if (typeof target[prop] === 'object' && target[prop] !== null) {
                 return proxying(target[prop]);
@@ -62,4 +62,8 @@ function objectsAreSame(object1, object2) {
         }
     }
     return result;
+ }
+
+ module.exports.rightJoin = (object1, object2, options) => {
+    return rightJoin(object1, object2, Object.assign(options, { disableProxy: true }));
  }
