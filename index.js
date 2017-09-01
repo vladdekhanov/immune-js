@@ -14,8 +14,8 @@ function rightJoin(object1, object2, options) {
     if (Array.isArray(object1) && Array.isArray(object2)) {
         var result = [];
         if (object1.length) {
-            object2.forEach((b) => {
-                object1.forEach((a) => {
+            object2.forEach(function(b) {
+                object1.forEach(function(a) {
                     if (compare(a, b)) { 
                         result.push(b); 
                     } else {
@@ -35,12 +35,12 @@ function rightJoin(object1, object2, options) {
 
 function proxying(object) {
     return new Proxy(Object.assign(object, { [Symbol.for(object)]: true }), { 
-        get: (target, prop) => {
+        get: function(target, prop) {
             if (typeof target[prop] === 'object' && target[prop] !== null) {
                 return proxying(target[prop]);
             } else return target[prop];
         },
-        set: (target, prop) => {
+        set: function(target, prop) {
             if (typeof target[prop] === 'object' && target[prop] !== null) {
                 proxying(target[prop]);
             }
@@ -64,6 +64,6 @@ function objectsAreSame(object1, object2) {
     return result;
  }
 
- module.exports.rightJoin = (object1, object2, options) => {
+ module.exports.rightJoin = function(object1, object2, options) {
     return rightJoin(object1, object2, Object.assign(options, { disableProxy: true }));
  }
